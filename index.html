@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FitTrack — платформа силовых тренировок</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- ============ LANDING PAGE ============ -->
+    <div id="landing" class="landing">
+      <nav class="landing-nav">
+        <div class="landing-brand">
+          <span class="brand-mark">FT</span>
+          <span class="landing-brand-name">FitTrack</span>
+        </div>
+        <button id="landing-enter" class="btn btn-primary">Начать тренироваться</button>
+      </nav>
+
+      <section class="landing-hero">
+        <div class="hero-text">
+          <span class="hero-badge">Твоя сила — твои данные</span>
+          <h1 class="hero-title">Тренируйся умнее.<br />Прогрессируй быстрее.</h1>
+          <p class="hero-subtitle">
+            FitTrack — платформа для учёта силовых тренировок. Записывай подходы,
+            повторения и рабочий вес, запускай живые тренировки, отслеживай
+            прогресс тела, ставь цели и наблюдай рост на графиках.
+          </p>
+          <div class="hero-actions">
+            <button id="hero-cta" class="btn btn-primary btn-lg">Начать тренироваться</button>
+            <button id="hero-demo" class="btn btn-ghost btn-lg">Узнать больше</button>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-card hero-card-main">
+            <div class="hero-card-head">
+              <span class="hero-card-label">Общий объём</span>
+              <span class="hero-card-trend">+12%</span>
+            </div>
+            <div class="hero-card-value">24 580 кг</div>
+            <div class="hero-bars">
+              <span style="height:40%"></span>
+              <span style="height:65%"></span>
+              <span style="height:52%"></span>
+              <span style="height:78%"></span>
+              <span style="height:60%"></span>
+              <span style="height:92%"></span>
+              <span style="height:100%"></span>
+            </div>
+          </div>
+          <div class="hero-card hero-card-side">
+            <span class="hero-card-label">Личный рекорд</span>
+            <div class="hero-card-value">Жим лёжа</div>
+            <div class="hero-card-sub">100 кг × 5</div>
+          </div>
+          <div class="hero-card hero-card-side-2">
+            <span class="hero-card-label">Тренировок</span>
+            <div class="hero-card-value">48</div>
+            <div class="hero-card-sub">за всё время</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="landing-features" id="landing-features">
+        <h2 class="section-title">Возможности FitTrack</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Аналитика прогресса</h3>
+            <p>Графики объёма, рабочих весов, частоты и нагрузки на мышечные группы. Сравнение периодов.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Live тренировка</h3>
+            <p>Запуши тренировку в реальном времени: подходы, вес, повторения, таймер отдыха и заметки.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📋</div>
+            <h3>Программы</h3>
+            <p>Шаблоны Full Body, Upper/Lower, Push/Pull/Legs и собственные программы с тренировочными днями.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📚</div>
+            <h3>Библиотека упражнений</h3>
+            <p>Поиск, фильтры по группам мышц, описание техники и оборудования. Свои упражнения тоже.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>Цели и достижения</h3>
+            <p>Ставь цели по весу, объёму и частоте. Отмечай прогресс и получай достижения.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📏</div>
+            <h3>Body Tracker</h3>
+            <p>Отслеживай массу тела и обхваты: грудь, талия, руки, бёдра. Графики изменений.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🏆</div>
+            <h3>Личные рекорды</h3>
+            <p>Автоматический поиск лучших результатов по каждому упражнению.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Данные только у тебя</h3>
+            <p>Всё хранится локально в браузере. Никаких серверов и подписок.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer class="landing-footer">
+        <p>FitTrack · платформа силовых тренировок · данные хранятся локально</p>
+      </footer>
+    </div>
+
+    <!-- ============ APP SHELL ============ -->
+    <div id="app" class="app hidden">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <span class="brand-mark">FT</span>
+          <span class="sidebar-brand-name">FitTrack</span>
+        </div>
+        <nav class="sidebar-nav">
+          <button class="nav-item active" data-route="home"><span class="nav-icon">🏠</span> Главная</button>
+          <button class="nav-item" data-route="dashboard"><span class="nav-icon">📊</span> Мой кабинет</button>
+          <button class="nav-item" data-route="workouts"><span class="nav-icon">🏋️</span> Тренировки</button>
+          <button class="nav-item" data-route="live"><span class="nav-icon">⚡</span> Live Workout</button>
+          <button class="nav-item" data-route="programs"><span class="nav-icon">📋</span> Программы</button>
+          <button class="nav-item" data-route="exercises"><span class="nav-icon">📚</span> Упражнения</button>
+          <button class="nav-item" data-route="analytics"><span class="nav-icon">📈</span> Аналитика</button>
+          <button class="nav-item" data-route="goals"><span class="nav-icon">🎯</span> Цели</button>
+          <button class="nav-item" data-route="body"><span class="nav-icon">📏</span> Body Tracker</button>
+          <button class="nav-item" data-route="settings"><span class="nav-icon">⚙️</span> Настройки</button>
+        </nav>
+        <button class="sidebar-back" id="back-to-landing">← На главную страницу</button>
+      </aside>
+
+      <div class="mobile-topbar">
+        <button class="burger" id="burger">☰</button>
+        <span class="mobile-brand">FitTrack</span>
+        <span></span>
+      </div>
+
+      <main class="app-main">
+        <!-- HOME -->
+        <section class="route" id="route-home">
+          <div class="route-header">
+            <h2 class="route-title" id="home-title">Главная</h2>
+            <p class="route-subtitle" id="home-subtitle">Обзор твоей недели</p>
+          </div>
+          <div class="quick-stats" id="home-stats"></div>
+          <div class="home-grid">
+            <div class="panel">
+              <h3 class="panel-title">Календарь активности</h3>
+              <p class="panel-hint">Последние 12 недель</p>
+              <div id="home-calendar" class="calendar-grid"></div>
+            </div>
+            <div class="panel">
+              <h3 class="panel-title">Сравнение недель</h3>
+              <div id="home-compare" class="compare-block"></div>
+            </div>
+          </div>
+          <div class="home-grid">
+            <div class="panel">
+              <h3 class="panel-title">Последняя тренировка</h3>
+              <div id="home-latest"></div>
+            </div>
+            <div class="panel">
+              <h3 class="panel-title">Личные рекорды</h3>
+              <div id="home-records" class="records-list"></div>
+            </div>
+          </div>
+          <div class="home-cta">
+            <button class="btn btn-primary btn-lg" data-go="live">Запустить тренировку</button>
+            <button class="btn btn-ghost btn-lg" data-go="workouts">История тренировок</button>
+          </div>
+        </section>
+
+        <!-- DASHBOARD -->
+        <section class="route hidden" id="route-dashboard">
+          <div class="route-header">
+            <h2 class="route-title">Мой кабинет</h2>
+            <p class="route-subtitle" id="dashboard-greeting"></p>
+          </div>
+          <div class="quick-stats" id="dashboard-stats"></div>
+          <div class="home-grid">
+            <div class="panel">
+              <h3 class="panel-title">График активности</h3>
+              <p class="panel-hint">Объём по неделям</p>
+              <div id="dashboard-activity" class="chart-area"></div>
+            </div>
+            <div class="panel">
+              <h3 class="panel-title">Нагрузка по мышцам</h3>
+              <p class="panel-hint">Объём по группам мышц</p>
+              <div id="dashboard-muscles"></div>
+            </div>
+          </div>
+          <div class="home-grid">
+            <div class="panel">
+              <h3 class="panel-title">Последние занятия</h3>
+              <div id="dashboard-recent" class="recent-list"></div>
+            </div>
+            <div class="panel">
+              <h3 class="panel-title">Личные рекорды</h3>
+              <div id="dashboard-records" class="records-grid"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- WORKOUTS -->
+        <section class="route hidden" id="route-workouts">
+          <div class="route-header">
+            <h2 class="route-title">Тренировки</h2>
+            <p class="route-subtitle">Создавай, редактируй и просматривай занятия</p>
+          </div>
+          <div class="panel">
+            <div class="panel-head-row">
+              <h3 class="panel-title" id="form-title">Добавить тренировку</h3>
+              <button id="cancel-edit" class="btn btn-ghost hidden">Отмена</button>
+            </div>
+            <form id="workout-form" class="workout-form">
+              <div class="form-row">
+                <label class="field">
+                  <span class="field-label">Название</span>
+                  <input type="text" id="workout-name" placeholder="Например, День ног" required maxlength="60" />
+                </label>
+                <label class="field">
+                  <span class="field-label">Дата</span>
+                  <input type="date" id="workout-date" required />
+                </label>
+              </div>
+              <div class="exercises-block" id="exercises-block"></div>
+              <button type="button" id="add-exercise-btn" class="btn btn-ghost">+ Добавить упражнение</button>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="form-submit">Сохранить тренировку</button>
+              </div>
+            </form>
+          </div>
+          <div class="panel">
+            <div class="panel-head-row">
+              <h3 class="panel-title">История тренировок</h3>
+              <span class="panel-count" id="workout-count"></span>
+            </div>
+            <div id="workout-list" class="workout-list"></div>
+          </div>
+        </section>
+
+        <!-- LIVE WORKOUT -->
+        <section class="route hidden" id="route-live">
+          <div class="route-header">
+            <h2 class="route-title">Live Workout</h2>
+            <p class="route-subtitle">Тренируйся в реальном времени</p>
+          </div>
+          <div id="live-setup" class="panel">
+            <h3 class="panel-title">Новая тренировка</h3>
+            <div class="form-row">
+              <label class="field">
+                <span class="field-label">Название</span>
+                <input type="text" id="live-name" placeholder="Например, Жимовая сессия" maxlength="60" />
+              </label>
+              <label class="field">
+                <span class="field-label">Программа (необязательно)</span>
+                <select id="live-program"><option value="">Без программы</option></select>
+              </label>
+            </div>
+            <div class="form-row">
+              <label class="field">
+                <span class="field-label">Упражнение</span>
+                <select id="live-exercise-select"></select>
+              </label>
+              <div class="live-add-btn">
+                <button type="button" class="btn btn-ghost" id="live-add-exercise">+ Добавить упражнение</button>
+              </div>
+            </div>
+            <div id="live-exercises" class="live-exercises-list"></div>
+            <div class="form-actions">
+              <button class="btn btn-primary btn-lg" id="live-start">Начать тренировку</button>
+            </div>
+          </div>
+
+          <div id="live-active" class="hidden">
+            <div class="live-header panel">
+              <div class="live-header-info">
+                <h3 id="live-active-name"></h3>
+                <span id="live-active-time" class="live-timer">00:00</span>
+              </div>
+              <div class="live-rest-timer" id="live-rest-box">
+                <span class="live-rest-label">Отдых</span>
+                <span id="live-rest-time">00:00</span>
+                <button class="live-rest-skip" id="live-rest-skip">Пропустить</button>
+              </div>
+            </div>
+            <div id="live-active-exercises"></div>
+            <div class="live-summary-actions">
+              <button class="btn btn-primary btn-lg" id="live-finish">Завершить тренировку</button>
+              <button class="btn btn-danger" id="live-cancel">Отменить</button>
+            </div>
+          </div>
+
+          <div id="live-finished" class="hidden">
+            <div class="panel live-summary-panel">
+              <h3 class="panel-title">Тренировка завершена</h3>
+              <div id="live-summary-content"></div>
+              <div class="form-actions">
+                <button class="btn btn-primary" id="live-done">Готово</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PROGRAMS -->
+        <section class="route hidden" id="route-programs">
+          <div class="route-header">
+            <h2 class="route-title">Программы</h2>
+            <p class="route-subtitle">Шаблоны и собственные программы</p>
+          </div>
+          <div class="panel">
+            <div class="panel-head-row">
+              <h3 class="panel-title">Создать программу</h3>
+            </div>
+            <form id="program-form" class="workout-form">
+              <div class="form-row">
+                <label class="field">
+                  <span class="field-label">Название программы</span>
+                  <input type="text" id="program-name" placeholder="Моя программа" maxlength="60" required />
+                </label>
+                <label class="field">
+                  <span class="field-label">Тип</span>
+                  <select id="program-type">
+                    <option value="custom">Своя</option>
+                    <option value="fullbody">Full Body</option>
+                    <option value="upperlower">Upper/Lower</option>
+                    <option value="ppl">Push/Pull/Legs</option>
+                  </select>
+                </label>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="program-submit">Создать программу</button>
+              </div>
+            </form>
+          </div>
+          <div class="panel">
+            <div class="panel-head-row">
+              <h3 class="panel-title">Шаблоны</h3>
+            </div>
+            <div id="program-templates" class="programs-grid"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head-row">
+              <h3 class="panel-title">Мои программы</h3>
+              <span class="panel-count" id="program-count"></span>
+            </div>
+            <div id="program-list"></div>
+          </div>
+        </section>
+
+        <!-- EXERCISES -->
+        <section class="route hidden" id="route-exercises">
+          <div class="route-header">
+            <h2 class="route-title">Библиотека упражнений</h2>
+            <p class="route-subtitle">Поиск, фильтры и техника выполнения</p>
+          </div>
+          <div class="panel">
+            <div class="exercise-library-controls">
+              <input type="text" id="ex-search" placeholder="Поиск упражнения..." />
+              <div class="muscle-filter" id="muscle-filter"></div>
+            </div>
+          </div>
+          <div id="exercise-library" class="exercise-library-grid"></div>
+          <div class="panel">
+            <div class="panel-head-row">
+              <h3 class="panel-title">Добавить своё упражнение</h3>
+            </div>
+            <form id="custom-exercise-form" class="workout-form">
+              <div class="form-row">
+                <label class="field">
+                  <span class="field-label">Название</span>
+                  <input type="text" id="ce-name" placeholder="Моё упражнение" maxlength="60" required />
+                </label>
+                <label class="field">
+                  <span class="field-label">Группа мышц</span>
+                  <select id="ce-muscle"></select>
+                </label>
+              </div>
+              <div class="form-row">
+                <label class="field">
+                  <span class="field-label">Оборудование</span>
+                  <input type="text" id="ce-equipment" placeholder="Штанга, гантели, тренажёр" maxlength="40" />
+                </label>
+                <label class="field">
+                  <span class="field-label">Тип</span>
+                  <select id="ce-type">
+                    <option value="compound">Базовое</option>
+                    <option value="isolation">Изолирующее</option>
+                  </select>
+                </label>
+              </div>
+              <label class="field" style="margin-bottom:16px">
+                <span class="field-label">Техника выполнения</span>
+                <textarea id="ce-technique" rows="3" placeholder="Краткое описание техники"></textarea>
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Добавить упражнение</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ANALYTICS -->
+        <section class="route hidden" id="route-analytics">
+          <div class="route-header">
+            <h2 class="route-title">Аналитика</h2>
+            <p class="route-subtitle">Динамика тренировочного объёма и рабочих весов</p>
+          </div>
+          <div class="panel">
+            <div class="period-selector">
+              <label class="field">
+                <span class="field-label">Период анализа</span>
+                <select id="analytics-period">
+                  <option value="30">Последние 30 дней</option>
+                  <option value="90" selected>Последние 90 дней</option>
+                  <option value="180">Полгода</option>
+                  <option value="365">Год</option>
+                  <option value="all">За всё время</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="field-label">Сравнить с</span>
+                <select id="analytics-compare">
+                  <option value="">Не сравнивать</option>
+                  <option value="prev">Предыдущий период</option>
+                </select>
+              </label>
+            </div>
+            <div id="analytics-compare-result" class="compare-periods hidden"></div>
+          </div>
+          <div class="analytics-grid">
+            <div class="panel">
+              <h3 class="panel-title">Тренировочный объём</h3>
+              <p class="panel-hint">Суммарный объём по неделям</p>
+              <div id="chart-volume" class="chart-area chart-tall"></div>
+            </div>
+            <div class="panel">
+              <h3 class="panel-title">Количество тренировок</h3>
+              <p class="panel-hint">Тренировок в неделю</p>
+              <div id="chart-count" class="chart-area chart-tall"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <h3 class="panel-title">Динамика рабочих весов</h3>
+            <p class="panel-hint">Максимальный вес по неделям для упражнения</p>
+            <div class="exercise-select-row">
+              <label class="field">
+                <span class="field-label">Упражнение</span>
+                <select id="analytics-exercise"></select>
+              </label>
+            </div>
+            <div id="chart-weights" class="chart-area chart-tall"></div>
+          </div>
+          <div class="panel">
+            <h3 class="panel-title">Нагрузка на мышечные группы</h3>
+            <p class="panel-hint">Распределение объёма по группам мышц</p>
+            <div id="analytics-muscles" class="muscle-breakdown"></div>
+          </div>
+          <div class="panel">
+            <h3 class="panel-title">Личные рекорды</h3>
+            <div id="analytics-records" class="records-grid"></div>
+          </div>
+        </section>
+
+        <!-- GOALS -->
+        <section class="route hidden" id="route-goals">
+          <div class="route-header">
+            <h2 class="route-title">Цели и достижения</h2>
+            <p class="route-subtitle">Ставь цели и следи за прогрессом</p>
+          </div>
+          <div class="panel">
+            <div class="panel-head-row">
+              <h3 class="panel-title">Новая цель</h3>
+            </div>
+            <form id="goal-form" class="workout-form">
+              <div class="form-row">
+                <label class="field">
+                  <span class="field-label">Название цели</span>
+                  <input type="text" id="goal-name" placeholder="Жим лёжа 100 кг" maxlength="60" required />
+                </label>
+                <label class="field">
+                  <span class="field-label">Тип</span>
+                  <select id="goal-type">
+                    <option value="weight">Рабочий вес</option>
+                    <option value="volume">Общий объём</option>
+                    <option value="frequency">Частота (тренировок)</option>
+                    <option value="custom">Своя</option>
+                  </select>
+                </label>
+              </div>
+              <div class="form-row">
+                <label class="field">
+                  <span class="field-label">Целевое значение</span>
+                  <input type="number" id="goal-target" min="1" step="0.5" placeholder="100" required />
+                </label>
+                <label class="field">
+                  <span class="field-label">Срок (дней)</span>
+                  <input type="number" id="goal-deadline" min="1" placeholder="90" />
+                </label>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Добавить цель</button>
+              </div>
+            </form>
+          </div>
+          <div class="panel">
+            <h3 class="panel-title">Мои цели</h3>
+            <div id="goal-list" class="goal-list"></div>
+          </div>
+          <div class="panel">
+            <h3 class="panel-title">Достижения</h3>
+            <div id="achievement-list" class="achievement-grid"></div>
+          </div>
+        </section>
+
+        <!-- BODY TRACKER -->
+        <section class="route hidden" id="route-body">
+          <div class="route-header">
+            <h2 class="route-title">Body Tracker</h2>
+            <p class="route-subtitle">Отслеживание параметров тела</p>
+          </div>
+          <div class="panel">
+            <h3 class="panel-title">Новая запись</h3>
+            <form id="body-form" class="body-form">
+              <label class="field">
+                <span class="field-label">Дата</span>
+                <input type="date" id="body-date" required />
+              </label>
+              <label class="field">
+                <span class="field-label">Масса тела, кг</span>
+                <input type="number" id="body-weight" min="0" step="0.1" placeholder="80.5" />
+              </label>
+              <label class="field">
+                <span class="field-label">Грудь, см</span>
+                <input type="number" id="body-chest" min="0" step="0.5" placeholder="105" />
+              </label>
+              <label class="field">
+                <span class="field-label">Талия, см</span>
+                <input type="number" id="body-waist" min="0" step="0.5" placeholder="82" />
+              </label>
+              <label class="field">
+                <span class="field-label">Рука, см</span>
+                <input type="number" id="body-arm" min="0" step="0.5" placeholder="38" />
+              </label>
+              <label class="field">
+                <span class="field-label">Бедро, см</span>
+                <input type="number" id="body-thigh" min="0" step="0.5" placeholder="60" />
+              </label>
+              <div class="form-actions body-form-actions">
+                <button type="submit" class="btn btn-primary">Сохранить запись</button>
+              </div>
+            </form>
+          </div>
+          <div class="panel">
+            <div class="panel-head-row">
+              <h3 class="panel-title">История измерений</h3>
+              <span class="panel-count" id="body-count"></span>
+            </div>
+            <div id="body-history" class="body-history"></div>
+          </div>
+          <div class="analytics-grid">
+            <div class="panel">
+              <h3 class="panel-title">Масса тела</h3>
+              <div id="chart-body-weight" class="chart-area chart-tall"></div>
+            </div>
+            <div class="panel">
+              <h3 class="panel-title">Обхваты</h3>
+              <div id="chart-body-measurements" class="chart-area chart-tall"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section class="route hidden" id="route-settings">
+          <div class="route-header">
+            <h2 class="route-title">Настройки</h2>
+            <p class="route-subtitle">Управление данными и приложением</p>
+          </div>
+          <div class="panel">
+            <h3 class="panel-title">Профиль</h3>
+            <div class="settings-row">
+              <label class="field">
+                <span class="field-label">Имя спортсмена</span>
+                <input type="text" id="settings-name" placeholder="Как тебя зовут?" maxlength="40" />
+              </label>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-primary" id="save-settings">Сохранить</button>
+            </div>
+          </div>
+          <div class="panel">
+            <h3 class="panel-title">Хранилище</h3>
+            <div class="settings-info" id="settings-info"></div>
+            <div class="settings-actions">
+              <button class="btn btn-ghost" id="export-data">Экспорт (JSON)</button>
+              <button class="btn btn-danger" id="clear-data">Удалить все данные</button>
+            </div>
+          </div>
+          <div class="panel">
+            <h3 class="panel-title">О приложении</h3>
+            <p class="settings-about">
+              FitTrack — платформа для учёта силовых тренировок. Все данные
+              хранятся локально в браузере и никуда не отправляются.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <script src="script.js"></script>
+  </body>
+</html>
