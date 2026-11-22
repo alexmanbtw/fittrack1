@@ -43,6 +43,7 @@ body {
   color: var(--text);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, p { margin: 0; }
@@ -494,6 +495,8 @@ select {
   flex-direction: column;
   gap: 4px;
   flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
 .nav-item {
   display: flex;
@@ -577,6 +580,7 @@ select {
   margin-left: 240px;
   padding: 36px 40px 60px;
   max-width: 1100px;
+  overflow-x: hidden;
 }
 
 /* Route заголовки */
@@ -1672,6 +1676,7 @@ textarea:focus { outline: none; border-color: var(--accent); }
    АДАПТИВНОСТЬ
    ============================================================ */
 
+/* ---- Tablet & small desktop (≤1024px) ---- */
 @media (max-width: 1024px) {
   .landing-hero {
     grid-template-columns: 1fr;
@@ -1696,42 +1701,39 @@ textarea:focus { outline: none; border-color: var(--accent); }
   }
 }
 
+/* ---- Mobile (≤768px) ---- */
 @media (max-width: 768px) {
+  /* Sidebar → off-canvas drawer */
   .sidebar {
     transform: translateX(-100%);
     box-shadow: var(--shadow-lg);
+    width: 260px;
   }
   .sidebar.open { transform: translateX(0); }
   .mobile-topbar { display: flex; }
   .app-main {
     margin-left: 0;
-    padding: 24px 18px 48px;
+    padding: 20px 16px 48px;
+    max-width: 100%;
   }
 
-  .quick-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  /* Typography */
+  .quick-stats { grid-template-columns: repeat(2, 1fr); }
   .hero-title { font-size: 34px; }
   .section-title { font-size: 26px; }
   .route-title { font-size: 24px; }
+  .route-subtitle { font-size: 14px; }
+  .panel { padding: 18px 16px; }
+  .panel-title { font-size: 16px; }
 
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-  .exercise-card {
-    grid-template-columns: 1fr 1fr;
-  }
-  .exercise-card .field:first-child {
-    grid-column: 1 / -1;
-  }
-  .exercise-card .exercise-remove {
-    grid-column: 1 / -1;
-  }
-  .exercise-row {
-    grid-template-columns: 1fr;
-    gap: 4px;
-  }
+  /* Forms */
+  .form-row { grid-template-columns: 1fr; }
+  .exercise-card { grid-template-columns: 1fr 1fr; }
+  .exercise-card .field:first-child { grid-column: 1 / -1; }
+  .exercise-card .exercise-remove { grid-column: 1 / -1; height: 38px; }
+  .exercise-row { grid-template-columns: 1fr; gap: 4px; }
 
+  /* Landing */
   .landing-nav,
   .landing-hero,
   .landing-features,
@@ -1740,31 +1742,179 @@ textarea:focus { outline: none; border-color: var(--accent); }
     padding-right: 20px;
   }
   .hero-card-main { left: 0; width: 90%; }
-  .features-grid {
-    grid-template-columns: 1fr;
-  }
-  .records-grid {
-    grid-template-columns: 1fr;
-  }
-  .workout-actions { flex-direction: column; }
+  .features-grid { grid-template-columns: 1fr; }
 
-  .programs-grid { grid-template-columns: 1fr; }
-  .exercise-library-grid { grid-template-columns: 1fr; }
+  /* Records & achievements */
+  .records-grid { grid-template-columns: 1fr; }
   .achievement-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* Workout list */
+  .workout-actions { flex-direction: column; gap: 6px; }
+  .workout-item { padding: 16px 14px; }
+
+  /* Programs */
+  .programs-grid { grid-template-columns: 1fr; }
+  .program-day-form { grid-template-columns: 1fr; gap: 8px; }
+
+  /* Exercise library */
+  .exercise-library-grid { grid-template-columns: 1fr; }
+
+  /* Live workout */
   .live-summary-stats { grid-template-columns: repeat(2, 1fr); }
-  .body-form { grid-template-columns: 1fr 1fr; }
-  .body-entry { grid-template-columns: 1fr 1fr; font-size: 13px; }
-  .calendar-grid { grid-template-columns: repeat(8, 1fr); }
-  .lae-set-header, .lae-set { grid-template-columns: 32px 1fr 1fr 1fr 32px; }
   .live-header { flex-direction: column; gap: 12px; align-items: flex-start; }
+  .live-active-exercise { padding: 16px 14px; }
+  .lae-set-header, .lae-set { grid-template-columns: 34px 1fr 1fr 1fr 34px; gap: 6px; }
+  .lae-set-num, .lae-set-toggle { width: 34px; height: 34px; }
+  .lae-set input { padding: 8px 6px; font-size: 14px; }
+  .live-rest-timer { flex-wrap: wrap; gap: 8px; padding: 8px 12px; }
+  .live-exercise-setup { flex-direction: column; align-items: stretch; gap: 8px; }
+
+  /* Body tracker */
+  .body-form { grid-template-columns: 1fr 1fr; }
+  .body-entry {
+    grid-template-columns: 1fr 1fr;
+    font-size: 13px;
+    padding: 12px 14px;
+  }
+  .body-entry .be-date { grid-column: 1 / -1; font-size: 14px; }
+  .body-entry .be-delete { grid-column: 1 / -1; justify-self: end; }
+
+  /* Calendar — 7 columns (one week per row) */
+  .calendar-grid { grid-template-columns: repeat(7, 1fr); gap: 4px; }
+
+  /* Analytics */
+  .period-selector { flex-direction: column; align-items: stretch; gap: 12px; }
+  .period-selector .field { min-width: 0; }
+  .exercise-select-row { flex-direction: column; }
+  .exercise-select-row .field { min-width: 0; }
+
+  /* Compare */
+  .compare-row { flex-direction: column; gap: 4px; align-items: flex-start; }
+  .compare-values { width: 100%; justify-content: space-between; }
+
+  /* Latest workout */
+  .latest-workout .lw-stats { flex-wrap: wrap; gap: 12px; }
 }
 
-@media (max-width: 480px) {
+/* ---- Large phone (≤430px) ---- */
+@media (max-width: 430px) {
   .hero-title { font-size: 28px; }
   .stat-value { font-size: 24px; }
   .quick-stats { gap: 10px; }
   .stat-card { padding: 16px 14px; }
   .achievement-grid { grid-template-columns: 1fr; }
   .body-form { grid-template-columns: 1fr; }
-  .period-selector { flex-direction: column; align-items: stretch; }
+
+  /* App padding */
+  .app-main { padding: 16px 12px 40px; }
+  .panel { padding: 16px 14px; }
+  .route-title { font-size: 22px; }
+  .route-header { margin-bottom: 20px; }
+
+  /* Buttons — larger touch targets */
+  .btn { padding: 12px 18px; font-size: 14px; }
+  .btn-lg { padding: 14px 24px; font-size: 15px; width: 100%; }
+
+  /* Full-width stacked buttons */
+  .live-summary-actions { flex-direction: column; }
+  .live-summary-actions .btn { width: 100%; }
+  .lae-set-actions .btn { width: 100%; }
+  .form-actions { flex-direction: column; }
+  .form-actions .btn { width: 100%; }
+  .home-cta { display: flex; flex-direction: column; gap: 10px; }
+  .home-cta .btn { width: 100%; }
+
+  /* Hero visual — simplify on small screens */
+  .hero-visual { height: 280px; }
+  .hero-card-side, .hero-card-side-2 { display: none; }
+  .hero-card-main { width: 100%; left: 0; height: 240px; }
+
+  /* Landing nav */
+  .landing-nav { padding: 18px 16px; }
+  .hero-actions { flex-direction: column; }
+  .hero-actions .btn { width: 100%; }
+
+  /* Settings */
+  .settings-actions { flex-direction: column; }
+  .settings-actions .btn { width: 100%; }
+
+  /* Workout actions — row on narrow */
+  .workout-head { flex-direction: column; gap: 8px; }
+  .workout-actions { flex-direction: row; flex-wrap: wrap; }
+  .workout-actions button { flex: 1; min-width: 80px; }
+
+  /* Period compare */
+  .compare-periods .cp-row { flex-direction: column; gap: 2px; }
+
+  /* Goal & program items */
+  .goal-item-head { flex-direction: column; gap: 8px; }
+  .program-item-head { flex-direction: column; gap: 8px; }
+  .program-item-actions { flex-wrap: wrap; }
+}
+
+/* ---- Standard phone (≤375px) ---- */
+@media (max-width: 375px) {
+  .app-main { padding: 14px 10px 36px; }
+  .route-title { font-size: 20px; }
+  .hero-title { font-size: 24px; }
+  .section-title { font-size: 22px; }
+  .stat-value { font-size: 22px; }
+  .stat-card { padding: 14px 12px; }
+  .quick-stats { gap: 8px; }
+  .panel { padding: 14px 12px; }
+
+  /* Live sets — ultra compact */
+  .lae-set-header, .lae-set { grid-template-columns: 28px 1fr 1fr 1fr 28px; gap: 4px; }
+  .lae-set-num, .lae-set-toggle { width: 28px; height: 28px; font-size: 12px; }
+  .lae-set input { padding: 6px 4px; font-size: 13px; }
+  .lae-set-header { font-size: 10px; }
+
+  /* Calendar */
+  .calendar-grid { gap: 3px; }
+
+  /* Live timer */
+  .live-timer { font-size: 20px; }
+  .live-header-info h3 { font-size: 17px; }
+  .live-rest-timer #live-rest-time { font-size: 18px; }
+
+  /* Feature cards */
+  .feature-card { padding: 20px 16px; }
+
+  /* Sidebar slightly narrower */
+  .sidebar { width: 240px; }
+}
+
+/* ---- Small phone (≤320px) ---- */
+@media (max-width: 320px) {
+  .app-main { padding: 12px 8px 32px; }
+  .hero-title { font-size: 22px; }
+  .route-title { font-size: 19px; }
+  .stat-value { font-size: 20px; }
+  .stat-label { font-size: 12px; }
+  .quick-stats { grid-template-columns: 1fr; gap: 8px; }
+  .panel { padding: 12px 10px; }
+  .panel-title { font-size: 15px; }
+
+  /* Live sets — minimal */
+  .lae-set-header, .lae-set { grid-template-columns: 24px 1fr 1fr 1fr 24px; gap: 3px; }
+  .lae-set-num, .lae-set-toggle { width: 24px; height: 24px; font-size: 11px; }
+  .lae-set input { padding: 5px 3px; font-size: 12px; }
+
+  /* Calendar */
+  .calendar-grid { gap: 2px; }
+  .calendar-day { border-radius: 3px; }
+
+  /* Live rest */
+  .live-rest-timer { padding: 6px 10px; gap: 6px; }
+  .live-rest-label { font-size: 11px; }
+  .live-rest-skip { font-size: 11px; padding: 3px 8px; }
+
+  /* Landing */
+  .landing-nav { padding: 14px 12px; }
+  .hero-badge { font-size: 12px; }
+  .hero-subtitle { font-size: 15px; }
+
+  /* Sidebar */
+  .sidebar { width: 220px; }
+  .nav-item { font-size: 14px; padding: 10px 12px; }
 }
