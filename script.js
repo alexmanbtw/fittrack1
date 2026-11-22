@@ -223,12 +223,13 @@ sidebarOverlay.addEventListener("click", closeSidebar);
 // КАРТОЧКИ СТАТИСТИКИ
 // ============================================================
 
-function buildStatCard(icon, value, label, accent) {
+function buildStatCard(icon, value, label, variant) {
+  const v = variant || "amber";
   const div = document.createElement("div");
-  div.className = "stat-card";
+  div.className = "stat-card stat-" + v;
   div.innerHTML = `
-    <div class="stat-icon">${icon}</div>
-    <div class="stat-value ${accent ? "accent" : ""}">${value}</div>
+    <div class="stat-icon icon-${v}">${icon}</div>
+    <div class="stat-value">${value}</div>
     <div class="stat-label">${label}</div>`;
   return div;
 }
@@ -240,16 +241,16 @@ function renderStatsInto(container, weekly) {
     const thisW = wk[wk.length - 1];
     const prevW = wk[wk.length - 2] || { volume: 0, count: 0 };
     const latest = sortedWorkouts()[0];
-    container.appendChild(buildStatCard("🏋️", thisW.count, "Тренировок за неделю", true));
-    container.appendChild(buildStatCard("💪", totalExercises(), "Упражнений всего"));
-    container.appendChild(buildStatCard("📊", formatNumber(thisW.volume), "Объём за неделю"));
-    container.appendChild(buildStatCard("📅", latest ? formatDateShort(latest.date) : "—", "Последняя"));
+    container.appendChild(buildStatCard("🏋️", thisW.count, "Тренировок за неделю", "amber"));
+    container.appendChild(buildStatCard("💪", totalExercises(), "Упражнений всего", "teal"));
+    container.appendChild(buildStatCard("📊", formatNumber(thisW.volume), "Объём за неделю", "blue"));
+    container.appendChild(buildStatCard("📅", latest ? formatDateShort(latest.date) : "—", "Последняя", "purple"));
   } else {
     const latest = sortedWorkouts()[0];
-    container.appendChild(buildStatCard("🏋️", workouts.length, "Всего тренировок", true));
-    container.appendChild(buildStatCard("💪", totalExercises(), "Упражнений"));
-    container.appendChild(buildStatCard("📊", formatNumber(totalVolume()), "Объём, кг"));
-    container.appendChild(buildStatCard("📅", latest ? formatDateShort(latest.date) : "—", "Последняя"));
+    container.appendChild(buildStatCard("🏋️", workouts.length, "Всего тренировок", "amber"));
+    container.appendChild(buildStatCard("💪", totalExercises(), "Упражнений", "teal"));
+    container.appendChild(buildStatCard("📊", formatNumber(totalVolume()), "Объём, кг", "blue"));
+    container.appendChild(buildStatCard("📅", latest ? formatDateShort(latest.date) : "—", "Последняя", "purple"));
   }
 }
 
@@ -436,7 +437,7 @@ function renderMuscleBreakdown(container) {
   }
   data.forEach((m) => {
     const row = document.createElement("div");
-    row.className = "muscle-bar-row";
+    row.className = "muscle-bar-row muscle-" + m.key;
     row.innerHTML = `
       <div class="muscle-bar-head">
         <span class="muscle-bar-name">${m.label}</span>
@@ -458,11 +459,87 @@ function renderHome() {
   document.getElementById("home-title").textContent = name ? "Привет, " + name : "Главная";
   document.getElementById("home-subtitle").textContent = "Обзор твоей недели";
 
+  renderHomeHero();
   renderStatsInto(document.getElementById("home-stats"), true);
   renderCalendar(document.getElementById("home-calendar"));
   renderCompareWeeks(document.getElementById("home-compare"));
   renderLatestWorkout(document.getElementById("home-latest"));
   renderRecordsInto(document.getElementById("home-records"), false);
+  renderRecommendation();
+}
+
+function renderHomeHero() {
+  const hero = document.getElementById("home-hero");
+  if (!hero) return;
+  const wk = weeklyVolume(8);
+  const thisW = wk[wk.length - 1];
+  const prevW = wk[wk.length - 2] || { volume: 0, count: 0 };
+  const volDiff = thisW.volume - prevW.volume;
+  const trendUp = volDiff >= 0;
+  const pct = prevW.volume > 0 ? Math.abs(Math.round((volDiff / prevW.volume) * 100)) : (thisW.volume > 0 ? 100 : 0);
+  const maxVol = Math.max(1, ...wk.map((w) => w.volume));
+  const barsHtml = wk.map((w) => {
+    const h = Math.max(4, (w.volume / maxVol) * 100);
+    const isCurrent = w === thisW;
+    return `<span class="hero-bar${isCurrent ? " current" : ""}" style="height:${h}%"></span>`;
+  }).join("");
+  hero.innerHTML = `
+    <div class="hero-progress-card">
+      <div class="hpc-left">
+        <div class="hpc-label">Объём за эту неделю</div>
+        <div class="hpc-value">${formatNumber(thisW.volume)}<span class="hpc-unit"> кг</span></div>
+        <div class="hpc-trend ${trendUp ? "up" : "down"}">
+          <span class="hpc-trend-icon">${trendUp ? "▲" : "▼"}</span>
+          ${pct}% vs прошлая неделя
+        </div>
+      </div>
+      <div class="hpc-right">
+        <div class="hpc-bars">${barsHtml}</div>
+        <div class="hpc-bars-label">8 недель</div>
+      </div>
+    </div>`;
+}
+
+function renderRecommendation() {
+  const panel = document.getElementById("home-recommendation");
+  if (!panel) return;
+  const breakdown = muscleBreakdown();
+  const trainedMuscles = new Set(breakdown.map((m) => m.key));
+  const allKeys = MUSCLE_KEYS;
+  const untrained = allKeys.filter((k) => !trainedMuscles.has(k));
+  const sorted = sortedWorkouts();
+  const lastDate = sorted.length > 0 ? sorted[0].date : null;
+  let restDays = 0;
+  if (lastDate) {
+    restDays = Math.floor((new Date() - new Date(lastDate)) / 86400000);
+  }
+  let recText = "";
+  let recMuscles = [];
+  if (workouts.length === 0) {
+    recText = "Начни с первой тренировки! Рекомендуем Full Body программу — она задействует все мышечные группы.";
+    recMuscles = MUSCLE_KEYS;
+  } else if (restDays >= 3) {
+    recText = "Ты давно не тренировался(ась). Возвращайся с Full Body подходом!";
+    recMuscles = MUSCLE_KEYS;
+  } else if (untrained.length > 0) {
+    const labels = untrained.map((k) => MUSCLE_GROUPS[MUSCLE_KEYS.indexOf(k)]);
+    recText = "На этой неделе ты не тренировал: " + labels.join(", ") + ". Добавь их в следующую тренировку!";
+    recMuscles = untrained;
+  } else {
+    const leastTrained = breakdown[breakdown.length - 1];
+    recText = "Меньше всего внимания получил: " + leastTrained.label + ". Сфокусируйся на нём в следующий раз!";
+    recMuscles = [leastTrained.key];
+  }
+  const chips = recMuscles.map((k) => {
+    const label = MUSCLE_GROUPS[MUSCLE_KEYS.indexOf(k)] || "Другое";
+    return `<span class="rec-chip muscle-${k}">${label}</span>`;
+  }).join("");
+  panel.innerHTML = `
+    <div class="rec-content">
+      <div class="rec-icon">💡</div>
+      <div class="rec-text">${recText}</div>
+    </div>
+    <div class="rec-chips">${chips}</div>`;
 }
 
 function renderLatestWorkout(container) {
@@ -1244,14 +1321,14 @@ let activeMuscleFilter = "all";
 function renderMuscleFilter() {
   muscleFilterContainer.innerHTML = "";
   const allBtn = document.createElement("button");
-  allBtn.className = "muscle-chip" + (activeMuscleFilter === "all" ? " active" : "");
+  allBtn.className = "muscle-chip chip-all" + (activeMuscleFilter === "all" ? " active" : "");
   allBtn.textContent = "Все";
   allBtn.addEventListener("click", () => { activeMuscleFilter = "all"; renderExercisesRoute(); });
   muscleFilterContainer.appendChild(allBtn);
 
   MUSCLE_KEYS.forEach((key, i) => {
     const btn = document.createElement("button");
-    btn.className = "muscle-chip" + (activeMuscleFilter === key ? " active" : "");
+    btn.className = "muscle-chip chip-" + key + (activeMuscleFilter === key ? " active" : "");
     btn.textContent = MUSCLE_GROUPS[i];
     btn.addEventListener("click", () => { activeMuscleFilter = key; renderExercisesRoute(); });
     muscleFilterContainer.appendChild(btn);
@@ -1283,11 +1360,14 @@ function renderExerciseLibrary() {
     const muscleLabel = MUSCLE_GROUPS[MUSCLE_KEYS.indexOf(ex.muscle)] || ex.muscle;
     const isCustom = customExercises.some((ce) => ce.name === ex.name);
     const card = document.createElement("div");
-    card.className = "exercise-card-lib";
+    card.className = "exercise-card-lib ex-lib-" + ex.muscle;
     card.innerHTML = `
-      <div class="el-name">${escapeHtml(ex.name)}</div>
+      <div class="el-header">
+        <span class="el-color-dot muscle-${ex.muscle}"></span>
+        <div class="el-name">${escapeHtml(ex.name)}</div>
+      </div>
       <div class="el-tags">
-        <span class="el-tag muscle">${muscleLabel}</span>
+        <span class="el-tag muscle muscle-${ex.muscle}">${muscleLabel}</span>
         <span class="el-tag">${ex.type === "compound" ? "Базовое" : "Изолирующее"}</span>
         ${ex.equipment ? `<span class="el-tag">${escapeHtml(ex.equipment)}</span>` : ""}
       </div>
@@ -1432,7 +1512,7 @@ function renderBarChart(container, data, valueKey) {
 
   const defs = document.createElementNS(svgNS, "defs");
   defs.innerHTML = `<linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#ea580c"/></linearGradient>`;
+    <stop offset="0%" stop-color="#F5A623"/><stop offset="100%" stop-color="#E8941A"/></linearGradient>`;
   svg.appendChild(defs);
 
   const gridLines = 4;
@@ -1441,12 +1521,12 @@ function renderBarChart(container, data, valueKey) {
     const line = document.createElementNS(svgNS, "line");
     line.setAttribute("x1", padding.left); line.setAttribute("x2", width - padding.right);
     line.setAttribute("y1", y); line.setAttribute("y2", y);
-    line.setAttribute("stroke", "#2a3038"); line.setAttribute("stroke-width", "1");
+    line.setAttribute("stroke", "#2D3540"); line.setAttribute("stroke-width", "1");
     svg.appendChild(line);
     const val = Math.round(maxVal * (1 - i / gridLines));
     const text = document.createElementNS(svgNS, "text");
     text.setAttribute("x", padding.left - 8); text.setAttribute("y", y + 4);
-    text.setAttribute("text-anchor", "end"); text.setAttribute("fill", "#5b6577");
+    text.setAttribute("text-anchor", "end"); text.setAttribute("fill", "#7A8499");
     text.setAttribute("font-size", "11"); text.textContent = formatNumber(val);
     svg.appendChild(text);
   }
@@ -1465,7 +1545,7 @@ function renderBarChart(container, data, valueKey) {
     if (i % 2 === 0 || data.length <= 8) {
       const label = document.createElementNS(svgNS, "text");
       label.setAttribute("x", x + barWidth / 2); label.setAttribute("y", height - padding.bottom + 18);
-      label.setAttribute("text-anchor", "middle"); label.setAttribute("fill", "#5b6577");
+      label.setAttribute("text-anchor", "middle"); label.setAttribute("fill", "#7A8499");
       label.setAttribute("font-size", "10"); label.textContent = d.label;
       svg.appendChild(label);
     }
@@ -1494,7 +1574,7 @@ function renderLineChart(container, data, valueKey) {
 
   const defs = document.createElementNS(svgNS, "defs");
   defs.innerHTML = `<linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="rgba(245,158,11,0.35)"/><stop offset="100%" stop-color="rgba(245,158,11,0)"/></linearGradient>`;
+    <stop offset="0%" stop-color="rgba(57,198,176,0.30)"/><stop offset="100%" stop-color="rgba(57,198,176,0)"/></linearGradient>`;
   svg.appendChild(defs);
 
   const gridLines = 4;
@@ -1503,12 +1583,12 @@ function renderLineChart(container, data, valueKey) {
     const line = document.createElementNS(svgNS, "line");
     line.setAttribute("x1", padding.left); line.setAttribute("x2", width - padding.right);
     line.setAttribute("y1", y); line.setAttribute("y2", y);
-    line.setAttribute("stroke", "#2a3038"); line.setAttribute("stroke-width", "1");
+    line.setAttribute("stroke", "#2D3540"); line.setAttribute("stroke-width", "1");
     svg.appendChild(line);
     const val = Math.round(maxVal * (1 - i / gridLines));
     const text = document.createElementNS(svgNS, "text");
     text.setAttribute("x", padding.left - 8); text.setAttribute("y", y + 4);
-    text.setAttribute("text-anchor", "end"); text.setAttribute("fill", "#5b6577");
+    text.setAttribute("text-anchor", "end"); text.setAttribute("fill", "#7A8499");
     text.setAttribute("font-size", "11"); text.textContent = formatNumber(val);
     svg.appendChild(text);
   }
@@ -1531,7 +1611,7 @@ function renderLineChart(container, data, valueKey) {
   points.forEach((p, i) => { linePath += (i === 0 ? "M" : " L") + ` ${p.x} ${p.y}`; });
   const line = document.createElementNS(svgNS, "path");
   line.setAttribute("d", linePath); line.setAttribute("fill", "none");
-  line.setAttribute("stroke", "#f59e0b"); line.setAttribute("stroke-width", "2.5");
+  line.setAttribute("stroke", "#39C6B0"); line.setAttribute("stroke-width", "2.5");
   line.setAttribute("stroke-linecap", "round"); line.setAttribute("stroke-linejoin", "round");
   svg.appendChild(line);
 
@@ -1539,12 +1619,12 @@ function renderLineChart(container, data, valueKey) {
     if (p.val === 0 && i > 0 && i < points.length - 1) return;
     const dot = document.createElementNS(svgNS, "circle");
     dot.setAttribute("cx", p.x); dot.setAttribute("cy", p.y); dot.setAttribute("r", "4");
-    dot.setAttribute("fill", "#f59e0b"); dot.setAttribute("stroke", "#0b0d10"); dot.setAttribute("stroke-width", "2");
+    dot.setAttribute("fill", "#39C6B0"); dot.setAttribute("stroke", "#1B2029"); dot.setAttribute("stroke-width", "2");
     svg.appendChild(dot);
     if (i % 2 === 0 || data.length <= 8) {
       const label = document.createElementNS(svgNS, "text");
       label.setAttribute("x", p.x); label.setAttribute("y", height - padding.bottom + 18);
-      label.setAttribute("text-anchor", "middle"); label.setAttribute("fill", "#5b6577");
+      label.setAttribute("text-anchor", "middle"); label.setAttribute("fill", "#7A8499");
       label.setAttribute("font-size", "10"); label.textContent = p.label;
       svg.appendChild(label);
     }
