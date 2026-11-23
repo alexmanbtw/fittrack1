@@ -577,7 +577,7 @@ function renderDashboard() {
   renderRecentInto(document.getElementById("dashboard-recent"), 5);
   renderRecordsInto(document.getElementById("dashboard-records"), true);
   const weekly = weeklyVolume(8);
-  renderBarChart(document.getElementById("dashboard-activity"), weekly, "volume");
+  renderBarChart(document.getElementById("dashboard-activity"), weekly, "volume", "dash");
   renderMuscleBreakdown(document.getElementById("dashboard-muscles"));
 }
 
@@ -1492,7 +1492,7 @@ function periodToWeeks(days) {
 // ГРАФИКИ — SVG (сохранено)
 // ============================================================
 
-function renderBarChart(container, data, valueKey) {
+function renderBarChart(container, data, valueKey, chartId) {
   container.innerHTML = "";
   const values = data.map((d) => d[valueKey]);
   const maxVal = Math.max(1, ...values);
@@ -1510,9 +1510,11 @@ function renderBarChart(container, data, valueKey) {
   svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
   svg.setAttribute("preserveAspectRatio", "none");
 
+  const gradId = "barGrad-" + (chartId || "default");
   const defs = document.createElementNS(svgNS, "defs");
-  defs.innerHTML = `<linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#F5A623"/><stop offset="100%" stop-color="#E8941A"/></linearGradient>`;
+  defs.innerHTML = `<linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#F5A623" stop-opacity="0.95"/><stop offset="100%" stop-color="#E8941A" stop-opacity="0.75"/></linearGradient>
+    <filter id="${gradId}-glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
   svg.appendChild(defs);
 
   const gridLines = 4;
@@ -1522,12 +1524,13 @@ function renderBarChart(container, data, valueKey) {
     line.setAttribute("x1", padding.left); line.setAttribute("x2", width - padding.right);
     line.setAttribute("y1", y); line.setAttribute("y2", y);
     line.setAttribute("stroke", "#2D3540"); line.setAttribute("stroke-width", "1");
+    line.setAttribute("stroke-dasharray", i === gridLines ? "0" : "3,4");
     svg.appendChild(line);
     const val = Math.round(maxVal * (1 - i / gridLines));
     const text = document.createElementNS(svgNS, "text");
     text.setAttribute("x", padding.left - 8); text.setAttribute("y", y + 4);
     text.setAttribute("text-anchor", "end"); text.setAttribute("fill", "#7A8499");
-    text.setAttribute("font-size", "11"); text.textContent = formatNumber(val);
+    text.setAttribute("font-size", "11"); text.setAttribute("font-weight", "500"); text.textContent = formatNumber(val);
     svg.appendChild(text);
   }
 
@@ -1539,8 +1542,9 @@ function renderBarChart(container, data, valueKey) {
     const rect = document.createElementNS(svgNS, "rect");
     rect.setAttribute("x", x); rect.setAttribute("y", val > 0 ? y : padding.top + chartH - 2);
     rect.setAttribute("width", barWidth); rect.setAttribute("height", val > 0 ? barH : 2);
-    rect.setAttribute("rx", "5"); rect.setAttribute("fill", "url(#barGrad)");
-    rect.setAttribute("opacity", val > 0 ? "0.9" : "0.2");
+    rect.setAttribute("rx", "6"); rect.setAttribute("fill", `url(#${gradId})`);
+    rect.setAttribute("opacity", val > 0 ? "1" : "0.25");
+    if (val > 0 && i === data.length - 1) rect.setAttribute("filter", `url(#${gradId}-glow)`);
     svg.appendChild(rect);
     if (i % 2 === 0 || data.length <= 8) {
       const label = document.createElementNS(svgNS, "text");
@@ -1611,7 +1615,7 @@ function renderLineChart(container, data, valueKey) {
   points.forEach((p, i) => { linePath += (i === 0 ? "M" : " L") + ` ${p.x} ${p.y}`; });
   const line = document.createElementNS(svgNS, "path");
   line.setAttribute("d", linePath); line.setAttribute("fill", "none");
-  line.setAttribute("stroke", "#39C6B0"); line.setAttribute("stroke-width", "2.5");
+  line.setAttribute("stroke", "#39C6B0"); line.setAttribute("stroke-width", "3");
   line.setAttribute("stroke-linecap", "round"); line.setAttribute("stroke-linejoin", "round");
   svg.appendChild(line);
 
@@ -1619,7 +1623,7 @@ function renderLineChart(container, data, valueKey) {
     if (p.val === 0 && i > 0 && i < points.length - 1) return;
     const dot = document.createElementNS(svgNS, "circle");
     dot.setAttribute("cx", p.x); dot.setAttribute("cy", p.y); dot.setAttribute("r", "4");
-    dot.setAttribute("fill", "#39C6B0"); dot.setAttribute("stroke", "#1B2029"); dot.setAttribute("stroke-width", "2");
+    dot.setAttribute("fill", "#39C6B0"); dot.setAttribute("stroke", "#161B22"); dot.setAttribute("stroke-width", "2");
     svg.appendChild(dot);
     if (i % 2 === 0 || data.length <= 8) {
       const label = document.createElementNS(svgNS, "text");
@@ -1645,8 +1649,8 @@ function renderAnalytics() {
   const days = periodSelect.value;
   const weeks = periodToWeeks(days);
   const volData = weeklyVolume(weeks);
-  renderBarChart(document.getElementById("chart-volume"), volData, "volume");
-  renderBarChart(document.getElementById("chart-count"), volData, "count");
+  renderBarChart(document.getElementById("chart-volume"), volData, "volume", "vol");
+  renderBarChart(document.getElementById("chart-count"), volData, "count", "cnt");
 
   const names = allExerciseNames();
   const prevValue = exerciseSelect.value;
@@ -1938,7 +1942,7 @@ function renderBodyCharts() {
     count: 1,
   }));
   if (measData.length > 0) {
-    renderBarChart(measContainer, measData, "volume");
+    renderBarChart(measContainer, measData, "volume", "meas");
   } else {
     measContainer.innerHTML = '<p class="chart-empty">Нет данных об обхватах</p>';
   }
